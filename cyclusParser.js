@@ -10,7 +10,7 @@ function readFile(evt) {
       r = new FileReader();
       fileContent = r.readAsText(f);
       r.onload = function(e) { 
-	      fileContent = e.target.result;
+        fileContent = e.target.result;
       }
     } else { 
       alert("Failed to load file");
@@ -20,15 +20,20 @@ function readFile(evt) {
 input.addEventListener('change',readFile,false);
 
 function setOutput(outSet){
-	console.log(fileContent);
-	//output.innerHTML = outSet; 
+  xmlCheck("duration",500);
+  //console.log(fileContent);
+  //output.innerHTML = outSet; 
 }
 
 
 function xmlCheck(tag_name, value){
-	parser = new DOMParser();
-	xmlOutput = parser.parseFromString(fileContent,"text/xml");
-	if(xmlDoc.getElementsByTagName(tag_name)[0].childNodes[0].nodeValue == value) {
-		console.log("Values match");
-	} 
+  parser = new DOMParser();
+  xmlOutput = parser.parseFromString(fileContent,"text/xml");
+  if(xmlOutput.getElementsByTagName(tag_name)[0].childNodes[0].nodeValue == value) {
+    output.innerHTML = "Correct. Values match";
+    console.log("Values match");
+  } 
+  else{
+    output.innerHTML= "Incorrect. Try Again";
+  }
 }
