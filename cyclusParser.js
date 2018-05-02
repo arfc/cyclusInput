@@ -127,18 +127,18 @@ function xmlControlCheck(duration,month,year,mode){
     startyear = controlValue.getElementsByTagName("startyear")[0].childNodes[0].nodeValue;
     console.log(xmlOutput.getElementsByTagName("control")[0]);
     //duration check
-    if( duration == duration) {
+    if( duration == durationValue) {
       console.log("Duration match");
     } 
     else{
-      var text= "Exptected " + duration + " for duration but instead found value " + outputValue ;
+      var text= "Exptected " + duration + " for duration but instead found value " + durationValue ;
       var outputEle= document.createElement("P");
       var outputText= document.createTextNode(text);
       outputEle.appendChild(outputText);
       document.getElementById("testOutput").append(outputEle);
     }
     //if start month and date doesnt really matter so only check if correct mode
-    if (mode == 1){
+    if (!mode){
       if( startmonth == month) {
         console.log("Month match");
       } 
@@ -310,7 +310,7 @@ function xmlCheckRecipe(name,basis,nuclide_id,nuclide_comp){
 } 
 
 function setOutput(outSet){
-  xmlControlCheck(500,6,2015,0);
+  xmlControlCheck(500,6,2015,true);
   xmlArchetypeCheck("Enrichment");
   xmlArchetypeCheck("Reactor");
   xmlArchetypeCheck("Source");
