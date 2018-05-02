@@ -92,7 +92,7 @@ function xmlCheck(tag_name, value){
     parser = new DOMParser();
     xmlOutput = parser.parseFromString(fileContent,"text/xml");
     outputValue = xmlOutput.getElementsByTagName(tag_name)[0].childNodes[0].nodeValue;
-    console.log(xmlOutput.getElementsByTagName(tag_name)[0].childNodes[0].nodeValue);
+    //console.log(xmlOutput.getElementsByTagName(tag_name)[0].childNodes[0].nodeValue);
     if( outputValue == value) {
       output.innerHTML = "Correct. Values match";
       console.log("Values match");
@@ -171,21 +171,27 @@ function xmlControlCheck(duration,month,year,mode){
 }
 //check archetypes
 function xmlArchetypeCheck(archeName){
+  try{
   parser = new DOMParser();
   xmlOutput = parser.parseFromString(fileContent,"text/xml");
   var text= archeName +" archetype not found"
   archeValue =xmlOutput.getElementsByTagName("archetypes")[0];
   specValue = archeValue.getElementsByTagName("spec");
-  console.log(specValue[0].getElementsByTagName("name")[0].childNodes[0].nodeValue);
+  //console.log(specValue[0].getElementsByTagName("name")[0].childNodes[0].nodeValue);
   for (i=0 ; i < specValue.length ; i++ ){
     nameValue = specValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
     if (nameValue == archeName){
-      text = "Archetype " + archeName+ " is set correctly"
+      //text = "Archetype " + archeName+ " is set correctly"
       console.log("Archetype matches")
       return
     }
   }
   makeOutputText(text);
+  }
+  catch(error){
+      var text= archeName + " not found";
+      makeOutputText(text);
+  }
 }
 
 
@@ -194,23 +200,23 @@ function xmlCheckCommodities(name, priority){
   parser = new DOMParser();
   xmlOutput = parser.parseFromString(fileContent,"text/xml");
   commodValue =xmlOutput.getElementsByTagName("commodity");
-  console.log(commodValue[0].getElementsByTagName("name")[0]);
+  text ="";
+  //console.log(commodValue[0].getElementsByTagName("name")[0]);
   for (i=0; i<commodValue.length ; i++){
     nameValue = commodValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
     priorityValue = commodValue[i].getElementsByTagName("solution_priority")[0].childNodes[0].nodeValue;
-    if(nameValue != name){
-      var nameMatch = "Commodity name does not match";
-      makeOutputText(nameMatch);
-    }
-    if(priorityValue != priority){
-      var prioMatch = "Commodity priority does not match";
-      makeOutputText(priority);
-    }
     if (nameValue == name && priorityValue == priority){
       console.log("matches");
       return;
     }   
+    if(nameValue != name){
+      var text = "Expected commodity " + name + " but found " + nameValue;
+    }
+    if(priorityValue != priority){
+      var text = "Expected priority " + priorityValue + "for " +name+ " but found " + priorityValue;
+    }
   }
+  makeOutputText(nameMatch);  
 }
 //check facilities
 
@@ -219,7 +225,7 @@ function xmlCheckRegionEntry(name, prototype, number){
   parser = new DOMParser();
   xmlOutput = parser.parseFromString(fileContent,"text/xml");
   regionValue =xmlOutput.getElementsByTagName("region");
-  console.log(regionValue[0].getElementsByTagName("institution"));
+  //console.log(regionValue[0].getElementsByTagName("institution"));
   //Check through regions for correct name
   for (i=0 ; i < regionValue.length; i++ ){
     regionNameValue = regionValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
@@ -268,8 +274,11 @@ function xmlCheckRecipe(name,basis,nuclide_id,nuclide_comp){
       for (x=0; x<nuclideValue.length; x++){
         idValue = nuclideValue[x].getElementsByTagName("id")[0].childNodes[0].nodeValue;
         compValue = nuclideValue[x].getElementsByTagName("comp")[0].childNodes[0].nodeValue;
-        if (nuclide_id[x] != idValue){
-          outText = "Nuclide id " + nuclide_id[x] +" does not match expected id, " + nuclide_id;
+        if (!(nuclide_id[x] == idValue)){
+          console.log("cs-173" == "cs-173")
+          console.log(nuclide_id[x]);
+          console.log(idValue);
+          outText = "Nuclide id " + nuclide_id[x] +" does not match expected id " + nuclide_id[x];
           makeOutputText(outText);
         }
         if (nuclide_comp[x] != compValue){
@@ -283,11 +292,23 @@ function xmlCheckRecipe(name,basis,nuclide_id,nuclide_comp){
 } 
 
 function setOutput(outSet){
-  //xmlControlCheck(500,6,2015,0);
-  // xmlArchetypeCheck("Ent");
-  // xmlCheckCommodities("U-ore",1.0);
-  //xmlCheckRecipe("Nat-U","mass",[92235,92238],[.0070002,.9930002]);
+  xmlControlCheck(500,6,2015,0);
+  xmlArchetypeCheck("Enrichment");
+  xmlArchetypeCheck("Reactor");
+  xmlArchetypeCheck("Source");
+  xmlArchetypeCheck("Sink");
+  xmlCheckCommodities("U-ore",1.0);
+  xmlCheckCommodities("Fresh-UOX-Fuel",1.0);
+  xmlCheckCommodities("Enrich-Tails",1.0);
+  xmlCheckCommodities("Used-UOX-Fuel",1.0);
   xmlCheckRegionEntry("Nuclandia",["EnrichPlant","ALWR","U mine","NuclearUnderground"],[1,5,1,1]);
+  xmlCheckRecipe("Nat-U","mass",[92235,92238],[.0070002,.9930002]);
+  xmlCheckRecipe("Fresh-UOX-Fuel","mass",["u-235","u-238"],[.0400002,.9600002]);
+  xmlCheckRecipe("Used-UOX-Fuel-4","mass",["u-235","u-238","pu-239","cs-137"],[.0110002,.9400002,.0090002,.0400002]);
+  if ( document.getElementById("testOutput").innerHTML == ""){
+    text = "Test successful! File matches expected values";
+    makeOutputText(text);
+  }
 }
 
 $(document).ready(function(){
