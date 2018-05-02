@@ -172,21 +172,21 @@ function xmlControlCheck(duration,month,year,mode){
 //check archetypes
 function xmlArchetypeCheck(archeName){
   try{
-  parser = new DOMParser();
-  xmlOutput = parser.parseFromString(fileContent,"text/xml");
-  var text= archeName +" archetype not found"
-  archeValue =xmlOutput.getElementsByTagName("archetypes")[0];
-  specValue = archeValue.getElementsByTagName("spec");
-  //console.log(specValue[0].getElementsByTagName("name")[0].childNodes[0].nodeValue);
-  for (i=0 ; i < specValue.length ; i++ ){
-    nameValue = specValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
-    if (nameValue == archeName){
-      //text = "Archetype " + archeName+ " is set correctly"
-      console.log("Archetype matches")
-      return
+    parser = new DOMParser();
+    xmlOutput = parser.parseFromString(fileContent,"text/xml");
+    var text= archeName +" archetype not found"
+    archeValue =xmlOutput.getElementsByTagName("archetypes")[0];
+    specValue = archeValue.getElementsByTagName("spec");
+    //console.log(specValue[0].getElementsByTagName("name")[0].childNodes[0].nodeValue);
+    for (i=0 ; i < specValue.length ; i++ ){
+      nameValue = specValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
+      if (nameValue == archeName){
+        //text = "Archetype " + archeName+ " is set correctly"
+        console.log("Archetype matches")
+        return
+      }
     }
-  }
-  makeOutputText(text);
+    makeOutputText(text);
   }
   catch(error){
       var text= archeName + " not found";
@@ -197,97 +197,115 @@ function xmlArchetypeCheck(archeName){
 
 //check commodities
 function xmlCheckCommodities(name, priority){
-  parser = new DOMParser();
-  xmlOutput = parser.parseFromString(fileContent,"text/xml");
-  commodValue =xmlOutput.getElementsByTagName("commodity");
-  text ="";
-  //console.log(commodValue[0].getElementsByTagName("name")[0]);
-  for (i=0; i<commodValue.length ; i++){
-    nameValue = commodValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
-    priorityValue = commodValue[i].getElementsByTagName("solution_priority")[0].childNodes[0].nodeValue;
-    if (nameValue == name && priorityValue == priority){
-      console.log("matches");
-      return;
-    }   
-    if(nameValue != name){
-      var text = "Expected commodity " + name + " but found " + nameValue;
+  try{
+    parser = new DOMParser();
+    xmlOutput = parser.parseFromString(fileContent,"text/xml");
+    commodValue =xmlOutput.getElementsByTagName("commodity");
+    text ="";
+    //console.log(commodValue[0].getElementsByTagName("name")[0]);
+    for (i=0; i<commodValue.length ; i++){
+      nameValue = commodValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
+      priorityValue = commodValue[i].getElementsByTagName("solution_priority")[0].childNodes[0].nodeValue;
+      if (nameValue == name && priorityValue == priority){
+        console.log("matches");
+        return;
+      }   
+      if(nameValue != name){
+        var text = "Expected commodity " + name + " but found " + nameValue;
+      }
+      if(priorityValue != priority){
+        var text = "Expected priority " + priorityValue + "for " +name+ " but found " + priorityValue;
+      }
     }
-    if(priorityValue != priority){
-      var text = "Expected priority " + priorityValue + "for " +name+ " but found " + priorityValue;
-    }
+    makeOutputText(nameMatch);  
   }
-  makeOutputText(nameMatch);  
+  catch(error){
+    var text = "Commodity tag not found";
+    makeOutputText(text);
+  }
 }
 //check facilities
 
 //check region
 function xmlCheckRegionEntry(name, prototype, number){
-  parser = new DOMParser();
-  xmlOutput = parser.parseFromString(fileContent,"text/xml");
-  regionValue =xmlOutput.getElementsByTagName("region");
-  //console.log(regionValue[0].getElementsByTagName("institution"));
-  //Check through regions for correct name
-  for (i=0 ; i < regionValue.length; i++ ){
-    regionNameValue = regionValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
-    if (regionNameValue == name){
-      institutionValue = regionValue[0].getElementsByTagName("institution")[0];
-      //If correct region check through instutions if there are more than one in that region
-      for (instCount = 0 ; instCount < institutionValue.length ; instCount++){
-        initialFacilityList = institutionValue[instCount].getElementsByTagName("initialfacilitylist")[0];
-        entryValue = initialFacilityList.getElementsByTagName("entry");
-        //look through each entry and check if the prototype values and number values match
-        for (entryCount = 0; entryCount < entryValue.length; entryCount++){
-          prototypeValue = entryValue[entryCount].getElementsByTagName("prototype")[0].childNodes[0].nodeValue;
-          numberValue = entryValue[entryCount].getElementsByTagName("number")[0].childNodes[0].nodeValue;
-          if (prototypeValue != prototype[entryCount]){
-            text = "Expected prototype value" + prototype[entryCount]+ " for region "+ name + " but instead found value: " + prototypeValue;
-            makeOutputText(text);
+  try{
+    parser = new DOMParser();
+    xmlOutput = parser.parseFromString(fileContent,"text/xml");
+    regionValue =xmlOutput.getElementsByTagName("region");
+    //console.log(regionValue[0].getElementsByTagName("institution"));
+    //Check through regions for correct name
+    for (i=0 ; i < regionValue.length; i++ ){
+      regionNameValue = regionValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
+      if (regionNameValue == name){
+        institutionValue = regionValue[0].getElementsByTagName("institution")[0];
+        //If correct region check through instutions if there are more than one in that region
+        for (instCount = 0 ; instCount < institutionValue.length ; instCount++){
+          initialFacilityList = institutionValue[instCount].getElementsByTagName("initialfacilitylist")[0];
+          entryValue = initialFacilityList.getElementsByTagName("entry");
+          //look through each entry and check if the prototype values and number values match
+          for (entryCount = 0; entryCount < entryValue.length; entryCount++){
+            prototypeValue = entryValue[entryCount].getElementsByTagName("prototype")[0].childNodes[0].nodeValue;
+            numberValue = entryValue[entryCount].getElementsByTagName("number")[0].childNodes[0].nodeValue;
+            if (prototypeValue != prototype[entryCount]){
+              text = "Expected prototype value" + prototype[entryCount]+ " for region "+ name + " but instead found value: " + prototypeValue;
+              makeOutputText(text);
+            }
+
+            if (numberValue != number[entryCount]){
+              text = "Expected number value" + number[entryCount]+ " for prototype "+ prototype[entryCount]+ " but instead found value: " + numberValue;
+              makeOutputText(text);
+            }     
+
           }
-
-          if (numberValue != number[entryCount]){
-            text = "Expected number value" + number[entryCount]+ " for prototype "+ prototype[entryCount]+ " but instead found value: " + numberValue;
-            makeOutputText(text);
-          }     
-
         }
       }
     }
+    console.log("valid");
   }
-  console.log("valid");
+  catch(error){
+    var text = "Region tag not found";
+    makeOutputText(text);
+  }
 }
 
 //check recipe
 function xmlCheckRecipe(name,basis,nuclide_id,nuclide_comp){
-  parser = new DOMParser();
-  xmlOutput = parser.parseFromString(fileContent,"text/xml");
-  recipeValue =xmlOutput.getElementsByTagName("recipe");
-  //console.log(recipeValue);
-  //Go through each recipe and check for the proper name to check
-  for (i=0; i<recipeValue.length ; i++){
-    nuclideValue = recipeValue[i].getElementsByTagName("nuclide");
-    //console.log(recipeValue[0].getElementsByTagName("name")[0].childNodes[0].nodeValue);
-    recipeNameValue = recipeValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
-    recipeBasisValue = recipeValue[i].getElementsByTagName("basis")[0].childNodes[0].nodeValue;
-    //Go through each nuclide in that recipe and check correpsonding values in lists
-    if (recipeNameValue == name && recipeBasisValue == basis){
-      //console.log(nuclide_id[0]);
-      for (x=0; x<nuclideValue.length; x++){
-        idValue = nuclideValue[x].getElementsByTagName("id")[0].childNodes[0].nodeValue;
-        compValue = nuclideValue[x].getElementsByTagName("comp")[0].childNodes[0].nodeValue;
-        if (!(nuclide_id[x] == idValue)){
-          console.log("cs-173" == "cs-173")
-          console.log(nuclide_id[x]);
-          console.log(idValue);
-          outText = "Nuclide id " + nuclide_id[x] +" does not match expected id " + nuclide_id[x];
-          makeOutputText(outText);
+  try{
+    parser = new DOMParser();
+    xmlOutput = parser.parseFromString(fileContent,"text/xml");
+    recipeValue =xmlOutput.getElementsByTagName("recipe");
+    //console.log(recipeValue);
+    //Go through each recipe and check for the proper name to check
+    for (i=0; i<recipeValue.length ; i++){
+      nuclideValue = recipeValue[i].getElementsByTagName("nuclide");
+      //console.log(recipeValue[0].getElementsByTagName("name")[0].childNodes[0].nodeValue);
+      recipeNameValue = recipeValue[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
+      recipeBasisValue = recipeValue[i].getElementsByTagName("basis")[0].childNodes[0].nodeValue;
+      //Go through each nuclide in that recipe and check correpsonding values in lists
+      if (recipeNameValue == name && recipeBasisValue == basis){
+        //console.log(nuclide_id[0]);
+        for (x=0; x<nuclideValue.length; x++){
+          idValue = nuclideValue[x].getElementsByTagName("id")[0].childNodes[0].nodeValue;
+          compValue = nuclideValue[x].getElementsByTagName("comp")[0].childNodes[0].nodeValue;
+          if (!(nuclide_id[x] == idValue)){
+            console.log("cs-173" == "cs-173")
+            console.log(nuclide_id[x]);
+            console.log(idValue);
+            outText = "Nuclide id " + idValue +" does not match expected id " + nuclide_id[x];
+            makeOutputText(outText);
+          }
+          if (nuclide_comp[x] != compValue){
+            outText = "Composition value " + nuclide_comp[x] +" does not match expected value, " + nuclide_comp;
+            makeOutputText(outText);
+          }   
         }
-        if (nuclide_comp[x] != compValue){
-          outText = "Composition value " + nuclide_comp[x] +" does not match expected value, " + nuclide_comp;
-          makeOutputText(outText);
-        }   
+        console.log("valid");
       }
-      console.log("valid");
     }
+  }
+  catch(error){
+    var text="No recipe tag found"
+    makeOutputText(text);
   }
 } 
 
