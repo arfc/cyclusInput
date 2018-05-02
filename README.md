@@ -1,10 +1,9 @@
 # Cyclus Input Checker
 """
 A simple javascript tool built to check cyclus input files in the form of xml or json for the purpose of a more interactve tutorial.
-""""
+"""
 
 ## Functions
-======
 def makeOutputText(param1: str)
 """
 Takes a string and makes an element to be displayed in outfield of the html
