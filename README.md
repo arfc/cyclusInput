@@ -1,9 +1,9 @@
 # Cyclus Input Checker
-======
+"""
 A simple javascript tool built to check cyclus input files in the form of xml or json for the purpose of a more interactve tutorial.
+""""
 
-
-##Functions
+## Functions
 ======
 def makeOutputText(param1: str)
 """
